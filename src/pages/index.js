@@ -13,8 +13,14 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
 
   const [places, setPlaces] = useState([]);
-  const [coordinates, setCoordinates] = useState({lat: 19, lng: 21});
+  const [coordinates, setCoordinates] = useState({});
   const [bounds, setBounds] = useState(null)
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
+      setCoordinates({ lat: latitude, lng: longitude });
+    })
+  })
 
   useEffect(() => {
     getData()
