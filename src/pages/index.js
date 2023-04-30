@@ -5,7 +5,7 @@ import { Grid } from '@mui/material'
 import List from '@/components/List'
 import Map from '@/components/Map'
 import { getData } from '@/api'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,20 +14,29 @@ export default function Home() {
 
   const [places, setPlaces] = useState([]);
   const [coordinates, setCoordinates] = useState({});
-  const [bounds, setBounds] = useState(null)
+  const [bounds, setBounds] = useState();
+
+  const handleBounds = useCallback((newBounds) => {
+    setBounds(newBounds);
+  }, []);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
       setCoordinates({ lat: latitude, lng: longitude });
     })
-  })
+  }, [])
 
   useEffect(() => {
-    getData()
-    .then((data) => {
-      setPlaces(data)
-    })
+    console.log(bounds)
+    if (bounds) {
+      getData(bounds.sw, bounds.ne)
+        .then((data) => {
+          console.log(data)
+          setPlaces(data)
+        })
+    }
   }, [coordinates, bounds])
+
 
   return (
     <main className='h-screen'>
@@ -39,7 +48,7 @@ export default function Home() {
         <Grid item xs={12} md={8}>
           <Map
             handleCoordinates={setCoordinates}
-            handleBounds={setBounds}
+            handleBounds={handleBounds}
             coordinates={coordinates}
           />
         </Grid>
