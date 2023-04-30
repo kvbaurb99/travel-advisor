@@ -13,15 +13,15 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
 
   const [places, setPlaces] = useState([]);
-  const [coordinates, setCoordinates] = useState({});
+  const [coordinates, setCoordinates] = useState({lat: 19, lng: 21});
+  const [bounds, setBounds] = useState(null)
 
   useEffect(() => {
     getData()
     .then((data) => {
-      console.log(data)
       setPlaces(data)
     })
-  }, [])
+  }, [coordinates, bounds])
 
   return (
     <main className='h-screen'>
@@ -31,7 +31,11 @@ export default function Home() {
           <List />
         </Grid>
         <Grid item xs={12} md={8}>
-          <Map />
+          <Map
+            handleCoordinates={setCoordinates}
+            handleBounds={setBounds}
+            coordinates={coordinates}
+          />
         </Grid>
       </Grid>
     </main>

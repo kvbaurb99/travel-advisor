@@ -2,9 +2,8 @@ import React from 'react'
 import GoogleMapReact from 'google-map-react'
 import { Paper, Typography, useMediaQuery } from '@mui/material'
 
-export default function Map() {
+export default function Map({ handleBounds, handleCoordinates, coordinates}) {
 
-    const coordinates = { lat: 37.7749, lng: -122.4194 };
 
   return (
     <div className='h-screen w-full ml-6'>
@@ -15,7 +14,10 @@ export default function Map() {
             defaultZoom={14}
             margin={[50, 50, 50, 50]}
             options={''}
-            onChange={''}
+            onChange={(e) => {
+                handleCoordinates({ lat: e.center.lat, lng: e.center.lng })
+                handleBounds({ ne: e.marginBounds.ne, sw: e.marginBounds.sw })
+            }}
             onChildClick={''}
         >
         </GoogleMapReact>
