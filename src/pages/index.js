@@ -13,8 +13,12 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
 
   const [places, setPlaces] = useState([]);
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [coordinates, setCoordinates] = useState({});
   const [bounds, setBounds] = useState();
+  const [isLoading, setIsLoading] = useState(false)
+  const [type, setType] = useState('restaurants')
+  const [rating, setRating] = useState('')
 
   const handleBounds = useCallback((newBounds) => {
     setBounds(newBounds);
@@ -27,29 +31,46 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    console.log(bounds)
+    const filteredPlaces = places.filter(place => place.rating > rating)
+    setFilteredPlaces(filteredPlaces)
+  }, [rating])
+
+  useEffect(() => {
     if (bounds) {
-      getData(bounds.sw, bounds.ne)
+      setIsLoading(true)
+      getData(type, bounds.sw, bounds.ne)
         .then((data) => {
-          console.log(data)
+          console.log(places)
           setPlaces(data)
+          setFilteredPlaces([])
+          setIsLoading(false)
         })
     }
-  }, [coordinates, bounds])
+  }, [type, coordinates, bounds])
+
+  console.log(places)
 
 
   return (
     <main className='h-screen'>
-      <NavBar />
+      <NavBar setCoordinates={setCoordinates} />
       <Grid container spacing={3} sx={{ width: '100%'}}>
         <Grid item xs={12} md={4}>
-          <List />
+          <List
+            places={filteredPlaces.length ? filteredPlaces : places}
+            isLoading={isLoading}
+            type={type}
+            setType={setType}
+            rating={rating}
+            setRating={setRating}
+          />
         </Grid>
         <Grid item xs={12} md={8}>
           <Map
             handleCoordinates={setCoordinates}
             handleBounds={handleBounds}
             coordinates={coordinates}
+            places={filteredPlaces.length ? filteredPlaces : places}
           />
         </Grid>
       </Grid>
